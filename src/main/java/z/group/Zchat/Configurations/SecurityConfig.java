@@ -1,5 +1,6 @@
 package z.group.Zchat.Configurations;
 
+import org.hibernate.boot.internal.Abstract;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,23 +16,26 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import z.group.Zchat.Service.UserServiceDetails;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig  {
-
+    private JwtFilter filter;
     private UserServiceDetails usd;
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-    public  SecurityConfig(UserServiceDetails usd){
+    public  SecurityConfig(UserServiceDetails usd, JwtFilter filter){
         this.usd = usd;
+        this.filter = filter;
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.cors(Customizer.withDefaults());
         httpSecurity.formLogin(AbstractHttpConfigurer::disable);
-        httpSecurity.httpBasic(Customizer.withDefaults());
+        httpSecurity.httpBasic(AbstractHttpConfigurer::disable);
+        httpSecurity.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.authorizeHttpRequests(req ->{
             req.requestMatchers("/login","/reg")
                     .permitAll()
