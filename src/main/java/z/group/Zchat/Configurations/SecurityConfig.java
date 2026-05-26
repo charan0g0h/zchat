@@ -37,7 +37,7 @@ public class SecurityConfig  {
         httpSecurity.httpBasic(AbstractHttpConfigurer::disable);
         httpSecurity.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.authorizeHttpRequests(req ->{
-            req.requestMatchers("/login","/reg")
+            req.requestMatchers("/auth/login","/auth/register")
                     .permitAll()
                     .anyRequest()
                     .authenticated();
@@ -47,12 +47,14 @@ public class SecurityConfig  {
         return httpSecurity.build();
     }
 
+    @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(usd);
         daoAuthenticationProvider.setPasswordEncoder(encoder);
         return daoAuthenticationProvider;
     }
 
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration){
        return configuration.getAuthenticationManager();
     }

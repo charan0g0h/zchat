@@ -13,7 +13,25 @@ public class Account {
             unique = true
     )
     public String username;
+    public String password;
     public String fullname;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Date getCreationdate() {
+        return creationdate;
+    }
+
+    public void setCreationdate(Date creationdate) {
+        this.creationdate = creationdate;
+    }
+
     @Column(
             unique = true
     )
@@ -54,8 +72,9 @@ public class Account {
         this.fullname = fullname;
     }
 
-    public Account(int acc_id, String username, String fullname, String email) {
+    public Account(int acc_id, String username, String fullname, String email,String password) {
         this.acc_id = acc_id;
+        this.password = password;
         this.username = username;
         this.fullname = fullname;
         this.email = email;
