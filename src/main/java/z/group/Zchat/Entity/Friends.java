@@ -21,6 +21,10 @@ public class Friends {
         this.followerId = followerId;
     }
 
+    public Friends(int followerId ,int followingId){
+        this.followerId = followerId;
+        this.followingId = followingId;
+    }
     public int getId() {
         return id;
     }

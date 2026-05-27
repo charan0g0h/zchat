@@ -55,7 +55,7 @@ public class LoginController {
     @PostMapping("/login")
     public Status login(@RequestBody Login login){
         try{
-            if(!accountRepo.existsByUsername(login.username())) return new Status(4,"username not found");
+
             if(login.password() == null) return new Status(1,"password missing");
             if(login.username() == null) return new Status(2,"username missing");
             Authentication authentication = manager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -68,6 +68,7 @@ public class LoginController {
             }
             return new Status(3,"login failed");
         }catch(Exception e){
+            e.printStackTrace();
             return new Status(12,"incorrect username or password");
         }
     }
