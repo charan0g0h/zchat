@@ -28,8 +28,8 @@ public class PublicController {
         this.requestRepo = requestRepo;
     }
 
-    @GetMapping("/search")
-    public SearchAcc search(@RequestBody String username){
+    @GetMapping("/search/{username}")
+    public SearchAcc search(@PathVariable String username){
         Account account = accountrepo.getByUsername(username);
         return new SearchAcc(account.getUsername(),account.getFullname(),account.getEmail());
     }
