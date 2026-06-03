@@ -35,8 +35,15 @@ public class LoginController {
 
     @PostMapping("/register")
     public Status register(@RequestBody Register reg){
+        Account exist = accountRepo.getByUsername(reg.username());
+        if(reg.username() == null ){
+            return new Status(3,"username empty ");
+        }
+        if(exist != null){
+            return new Status(3," not available");
+        }
         if(reg.password() == null || reg.password().length() < 8){
-            return new Status(1,"password missing");
+            return new Status(1,"password missing or password is small(min length 8)");
         }
         if (reg.email() == null || !reg.email().contains("@")) {
             return new Status(2,"check email");
@@ -44,6 +51,7 @@ public class LoginController {
 
         Account account = new Account();
         account.setUsername(reg.username());
+        account.setFullname(reg.fullname());
         account.setPassword(encoder.encode(reg.password()));
         account.setEmail(reg.email());
         account.setCreationdate(new Date());

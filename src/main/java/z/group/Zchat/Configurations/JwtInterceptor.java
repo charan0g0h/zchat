@@ -26,12 +26,15 @@ public class JwtInterceptor implements ChannelInterceptor {
                               MessageChannel channel) {
 
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor( message, StompHeaderAccessor.class);
-
         assert accessor != null;
+        System.out.println("COMMAND = " + accessor.getCommand());
+
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
             String authHeader =
                     accessor.getFirstNativeHeader("Authorization");
+
+            System.out.println("AUTH = " + authHeader);
 
             if(authHeader == null || !authHeader.startsWith("Bearer ")) {
                 throw new IllegalArgumentException("No JWT Token");
