@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")
-                .setAllowedOrigins("https://zchat-front.vercel.app")
+                .setAllowedOrigins("http://192.168.0.107:5173")
                 .withSockJS();
     }
 

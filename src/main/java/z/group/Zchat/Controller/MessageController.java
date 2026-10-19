@@ -34,6 +34,7 @@ public class MessageController {
 
     @MessageMapping("/private-message")
     public void privateMessage(Message message , Principal principal) {
+        System.out.println("msg sent by"+principal.getName());
         message.setFromUsername(principal.getName());
         messageRepo.save(message);
         messagingTemplate.convertAndSendToUser(message.getToUsername(), "/queue/messages", message);

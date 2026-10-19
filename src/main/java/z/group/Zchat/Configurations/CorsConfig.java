@@ -10,7 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://zchat-front.vercel.app")
+                .allowedOrigins("http://192.168.0.107:5173")
                 .allowedHeaders("*")
                 .allowedMethods("*")
                 .allowCredentials(true);
