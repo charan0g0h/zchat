@@ -37,7 +37,6 @@ public class Account {
     )
     public String email;
     public Date creationdate;
-
     public Account(){}
 
     public int getAcc_id() {

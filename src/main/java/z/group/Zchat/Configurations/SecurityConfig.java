@@ -37,7 +37,7 @@ public class SecurityConfig  {
         httpSecurity.httpBasic(AbstractHttpConfigurer::disable);
         httpSecurity.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.authorizeHttpRequests(req ->{
-            req.requestMatchers("/auth/login","/auth/register","/chat/**")
+            req.requestMatchers("/auth/login","/auth/register","/chat/**","/auth/send-otp","/auth/verify-otp")
                     .permitAll()
                     .anyRequest()
                     .authenticated();

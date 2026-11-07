@@ -1,22 +1,24 @@
 package z.group.Zchat.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.mail.autoconfigure.MailProperties;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import z.group.Zchat.Configurations.JwtConfig;
 import z.group.Zchat.Configurations.Status;
 import z.group.Zchat.Entity.Account;
+import z.group.Zchat.Records.Otprequest;
 import z.group.Zchat.Records.Login;
+import z.group.Zchat.Records.Otpverify;
 import z.group.Zchat.Records.Register;
 import z.group.Zchat.Repo.AccountRepo;
+import z.group.Zchat.Service.EmailService;
 
+import java.time.Duration;
 import java.util.Date;
 
 @RestController
@@ -24,9 +26,16 @@ import java.util.Date;
 public class LoginController {
     AccountRepo accountRepo;
     AuthenticationManager manager;
+    EmailService emailService;
     JwtConfig jwtConfig;
-    public LoginController(AccountRepo accountRepo , AuthenticationManager manager , JwtConfig jwtConfig){
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    MailProperties mailProperties;
+    public LoginController(AccountRepo accountRepo , AuthenticationManager manager , JwtConfig jwtConfig , EmailService emailService){
         this.accountRepo = accountRepo;
+        this.emailService = emailService;
         this.manager = manager;
         this.jwtConfig = jwtConfig;
     }
@@ -78,6 +87,44 @@ public class LoginController {
         }catch(Exception e){
             e.printStackTrace();
             return new Status(12,"incorrect username or password");
+        }
+    }
+
+    @PostMapping("/send-otp")
+    public Status sendOtp(
+            @RequestBody Otprequest otprequest
+    ){
+        try {
+            String otp = "123456";
+            emailService.sendMail(otprequest.email(), "OTP", otp);
+            stringRedisTemplate.opsForValue().set(
+                    otprequest.email(),
+                    otp,
+                    Duration.ofSeconds(300)
+            );
+            return new Status(0,"otp sent succesfully");
+        }catch (Exception e){
+            return new Status(1,e.getLocalizedMessage());
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public Status verifyOtp(
+            @RequestBody Otpverify otpverify
+            ){
+        try{
+            String storedKey = stringRedisTemplate.opsForValue().get(otpverify.email());
+            System.out.println(storedKey);
+            if(storedKey == null){
+                return new Status(1,"try again");
+            }
+            if(storedKey.equals(otpverify.otp())){
+                return new Status(0,"otp verified");
+            }else{
+                return new Status(2,"incorrect otp");
+            }
+        }catch (Exception e){
+            return new Status(3,e.getLocalizedMessage());
         }
     }
 }
