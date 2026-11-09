@@ -53,6 +53,7 @@ public class ZapController {
         Zap zap = new Zap();
         zap.setContent(readZap.content());
         zap.setHead(readZap.head());
+        zap.setDate(new Date(System.currentTimeMillis()));
         zap.setUsername(principal.getName());
         zapRepo.save(zap);
         simpMessagingTemplate.convertAndSend("/topic/zaps",zap);
@@ -70,7 +71,7 @@ public class ZapController {
         Comments comment = new Comments();
         comment.setCommenter(principal.getName());
         comment.setComment(clientComment.content());
-        comment.setDate(new Date());
+        comment.setDate(new Date(System.currentTimeMillis()));
         comment.setZap(zap);
         commentRepo.save(comment);
         CommentResponse response = new CommentResponse(comment.getId(), clientComment.zapId(), principal.getName(),

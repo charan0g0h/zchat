@@ -18,8 +18,10 @@ import z.group.Zchat.Records.Register;
 import z.group.Zchat.Repo.AccountRepo;
 import z.group.Zchat.Service.EmailService;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Date;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/auth")
@@ -95,11 +97,15 @@ public class LoginController {
             @RequestBody Otprequest otprequest
     ){
         try {
-            String otp = "123456";
-            emailService.sendMail(otprequest.email(), "OTP", otp);
+            StringBuilder otp = new StringBuilder();
+            SecureRandom random = new SecureRandom();
+            for(int i=0;i<6;i++){
+                otp.append(random.nextInt(10));
+            }
+            emailService.sendMail(otprequest.email(), "OTP", otp.toString());
             stringRedisTemplate.opsForValue().set(
                     otprequest.email(),
-                    otp,
+                    otp.toString(),
                     Duration.ofSeconds(300)
             );
             return new Status(0,"otp sent succesfully");
